@@ -1,14 +1,12 @@
 import type { Metadata } from "next";
 import { Josefin_Sans } from "next/font/google";
 import "./globals.css";
+import { Footer } from "@/components/footer";
+import { Navbar } from "@/components/navbar";
+import { Toaster } from "@/components/ui/toast";
 
 const JosefinSans = Josefin_Sans({
  
-  subsets: ["latin"],
-});
-
-const geistMono = Josefin_Sans({
-  variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 
@@ -20,7 +18,13 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${JosefinSans.className} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <Toaster>
+          <Navbar />
+          {children}
+          <Footer />
+        </Toaster>
+      </body>
     </html>
   );
 }

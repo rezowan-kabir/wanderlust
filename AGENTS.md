@@ -15,8 +15,8 @@ Single Next.js App Router site at the repo root. Routes live in `src/app`; there
 ## Commands
 
 - `npm run dev` — dev server (Turbopack).
-- `npm run lint` — ESLint 9 flat config. This currently fails on pre-existing errors; see "Known baseline" below. Use `npx eslint <path>` to check only the files you touched.
-- `npx next typegen`, then `npx tsc --noEmit` — fast typecheck without a full build. Run `typegen` first on a fresh checkout or after adding routes; it creates the gitignored `next-env.d.ts` and route types used by `PageProps` / `LayoutProps`.
+- `npm run lint` — ESLint 9 flat config, currently clean. Use `npx eslint <path>` to check only the files you touched.
+- `npx next typegen`, then `npx tsc --noEmit` — fast typecheck without a full build. `typegen` is required first: it creates the gitignored `next-env.d.ts` and the route types behind the global `PageProps` / `LayoutProps` helpers. Run it on a fresh checkout and again after adding, renaming, or deleting a route — stale `.next/types` makes `tsc` fail with `TS2307: Cannot find module '../../src/app/...'` for routes that no longer exist.
 - `npm run build` / `npm start` — production build and serve.
 
 There is no `test` or `typecheck` script.
@@ -40,8 +40,3 @@ Turbopack is the default bundler for dev and build, but the dev server does **no
 - Vendored shadcn components in `src/components/ui` are expected to be edited in place when customizing.
 - Class merging uses the `cn` package (shadcn's `clsx` + `tailwind-merge` replacement), not those two libraries. `src/lib/utils.ts` re-exports it, but generated components import `cn` from `"cn"` directly.
 - Page imagery is in `public/assets` and `public/assets/destinations`; reference it as `/assets/...`.
-
-## Known baseline
-
-- `npm run lint` exits 1 with two pre-existing `react-hooks/set-state-in-effect` errors: `src/components/ui/carousel.tsx:98` and `src/hooks/use-mobile.ts:14`. Don't present these as regressions from your change; verify any new lint output separately.
-- `src/app/layout.tsx` has an unused `geistMono` font variable and `src/app/page.tsx` an unused `Image` import, currently reported as warnings.

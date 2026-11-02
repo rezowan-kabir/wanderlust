@@ -16,6 +16,15 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Travel packages
+
+Create a package at `/add-destination` and browse saved packages at `/destinations`.
+The form sends JSON to `POST /add-destination` on the API server at
+`http://localhost:8000` by default. Set `NEXT_PUBLIC_API_URL` to the API server's
+base URL when deploying. After the API accepts a package, this browser also saves
+a copy in local storage so it appears in the destinations list; browser copies
+are not shared between devices or browsers.
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
