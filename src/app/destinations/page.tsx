@@ -276,14 +276,16 @@ export default function DestinationsPage() {
               <li key={travelPackage.id}>
                 <article className="group flex h-full flex-col">
                   <div className="relative">
-                    <Image
-                      src={travelPackage.imageUrl}
-                      alt={travelPackage.destinationName}
-                      width={640}
-                      height={400}
-                      unoptimized
-                      className="h-48 w-full rounded-lg object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
+                    <Link href={`/destinations/${travelPackage.id}`}>
+                      <Image
+                        src={travelPackage.imageUrl}
+                        alt={travelPackage.destinationName}
+                        width={640}
+                        height={400}
+                        unoptimized
+                        className="h-48 w-full rounded-lg object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                    </Link>
                     {typeof travelPackage.rating === "number" ? (
                       <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-md bg-white py-1 pl-2.5 pr-2 text-xs font-semibold text-slate-900 shadow-sm">
                         {travelPackage.rating.toFixed(1)}
@@ -303,7 +305,12 @@ export default function DestinationsPage() {
 
                     <div className="mt-1 flex items-baseline justify-between gap-3">
                       <h2 className="min-w-0 truncate text-base font-semibold text-slate-900">
-                        {travelPackage.destinationName}
+                        <Link
+                          href={`/destinations/${travelPackage.id}`}
+                          className="transition-colors hover:text-brand"
+                        >
+                          {travelPackage.destinationName}
+                        </Link>
                       </h2>
                       <p className="shrink-0 text-base font-bold text-slate-900">
                         ${travelPackage.price}

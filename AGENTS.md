@@ -10,7 +10,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # Wanderlust
 
-Single Next.js App Router site at the repo root. Routes: `/`, `/destinations`, `/add-destination`, `/bookings`. There are no API routes, tests, or CI in this repo — package data lives in a separate backend at `NEXT_PUBLIC_API_URL` (default `http://localhost:8000`), documented in README.md.
+Single Next.js App Router site at the repo root. Routes: `/`, `/destinations`, `/destinations/[id]`, `/destinations/[id]/edit`, `/add-destination`, `/bookings`. There are no API routes, tests, or CI in this repo — package data lives in a separate backend at `NEXT_PUBLIC_API_URL` (default `http://localhost:8000`), documented in README.md. That backend is a separate repo at `../wanderlust-server` (Express + MongoDB); restart it after editing its routes.
 
 ## Commands
 
@@ -35,11 +35,16 @@ Turbopack is the default bundler for dev and build, but the dev server does **no
 
 ## Data model
 
-- `src/lib/travel-packages.ts` owns package data: the `TravelPackage` type, `fetchTravelPackages()` (GET `{API_BASE_URL}/destinations`; accepts a bare array or `{ packages: [...] }`), and `useTravelPackages()` — a `useSyncExternalStore` + localStorage store with a cross-tab `storage` listener. When the API is unreachable it falls back to this browser's saved copies and returns an error string.
+- `src/lib/travel-packages.ts` owns package data: the `TravelPackage` type, `fetchTravelPackages()` (GET `{API_BASE_URL}/destination`, singular; accepts a bare array or `{ packages: [...] }`), and `useTravelPackages()` — a `useSyncExternalStore` + localStorage store with a cross-tab `storage` listener. When the API is unreachable it falls back to this browser's saved copies and returns an error string.
+- `/destinations/[id]` fetches GET `{API_BASE_URL}/destination/{id}` on the server. With `cacheComponents` this is the pattern: the page render must `await` `params` / `fetch` only inside a `<Suspense>`-wrapped child, or prerendering fails with `blocking-prerender-dynamic`. The route builds as a Partial Prerender (◐).
+- **API quirk:** `GET /destination/{id}` answers a missing id with `200` and a `null` body, not `404` (see `wanderlust-server/index.js`). Treat `null` as not-found, and call `notFound()` *outside* the `try` that wraps the fetch — it works by throwing.
+- Edit/delete call `PUT` / `DELETE {API_BASE_URL}/destination/{id}` (added to `wanderlust-server`), then keep the browser copy in sync with `updateTravelPackage()` / `removeTravelPackage()`.
+- `src/app/not-found.tsx` is the app-wide 404 (used by `notFound()` and unmatched URLs); `src/app/loading.tsx` is the app-wide Suspense fallback. A `notFound()` thrown after a Suspense fallback has streamed still renders the 404 UI, but the HTTP status is already sent.
+- `Navbar` calls `usePathname()`, which also can't run in a dynamic route's static shell — it is streamed via `<Suspense fallback={null}>` in `layout.tsx` (absolute positioning makes a null fallback layout-safe).
 - `src/lib/bookings.ts` repeats that store pattern for bookings. Both stores are browser-local only — they are never shared between devices or browsers.
 - `/add-destination` POSTs to `{API_BASE_URL}/add-destination` itself, then calls `saveTravelPackage()` for the local copy, so packages created while the API is down still render.
 - `rating` is optional on `TravelPackage`; never assume a destination card has one.
-- Import `API_BASE_URL` from this lib rather than re-defining it in a page file.
+- Import `API_BASE_URL` from `@/lib/api` in Server Components. `travel-packages.ts` is `"use client"`, so importing the value from there in a server file yields a client-reference stub rather than the string (client components may use either).
 - `<Toaster>` wraps the whole app in `layout.tsx`, so `toast.add({...})` works from any component.
 
 ## UI and styling

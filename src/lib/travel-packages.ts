@@ -2,9 +2,9 @@
 
 import { useSyncExternalStore } from "react";
 
-/** Base URL of the external package API, e.g. http://localhost:8000. */
-export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+import { API_BASE_URL } from "./api";
+
+export { API_BASE_URL };
 
 export type TravelPackage = {
   id: string;
@@ -233,4 +233,46 @@ export function saveTravelPackage(
   setSnapshot({ packages, error: null });
 
   return travelPackage;
+}
+
+/**
+ * Replace the saved copy with the same id, or prepend it when the API-owned
+ * package was never saved in this browser. The id is kept so links stay valid.
+ */
+export function updateTravelPackage(
+  id: string,
+  entry: Omit<TravelPackage, "id">,
+): TravelPackage {
+  initialize();
+
+  if (snapshot.error) {
+    throw new Error(snapshot.error);
+  }
+
+  const travelPackage: TravelPackage = { ...entry, id };
+  const exists = snapshot.packages.some((saved) => saved.id === id);
+  const packages = exists
+    ? snapshot.packages.map((saved) =>
+        saved.id === id ? travelPackage : saved,
+      )
+    : [travelPackage, ...snapshot.packages];
+
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(packages));
+  setSnapshot({ packages, error: null });
+
+  return travelPackage;
+}
+
+/** Remove the browser-local copy; the API record is deleted separately. */
+export function removeTravelPackage(id: string) {
+  initialize();
+
+  if (snapshot.error) {
+    throw new Error(snapshot.error);
+  }
+
+  const packages = snapshot.packages.filter((saved) => saved.id !== id);
+
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(packages));
+  setSnapshot({ packages, error: null });
 }

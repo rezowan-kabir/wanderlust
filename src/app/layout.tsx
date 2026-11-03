@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Josefin_Sans } from "next/font/google";
 import "./globals.css";
 import { Footer } from "@/components/footer";
@@ -23,7 +24,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="en" className={`${JosefinSans.className} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         <Toaster>
-          <Navbar />
+          {/* `usePathname()` inside Navbar cannot run in a dynamic route's
+              static shell, so the bar streams in via Suspense. It is absolutely
+              positioned, hence the empty fallback causes no layout shift. */}
+          <Suspense fallback={null}>
+            <Navbar />
+          </Suspense>
           {children}
           <Footer />
         </Toaster>
