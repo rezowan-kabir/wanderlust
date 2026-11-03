@@ -10,7 +10,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # Wanderlust
 
-Single Next.js App Router site at the repo root. Routes live in `src/app`; there is no backend, API layer, test suite, or CI yet.
+Single Next.js App Router site at the repo root. Routes: `/`, `/destinations`, `/add-destination`, `/bookings`. There are no API routes, tests, or CI in this repo — package data lives in a separate backend at `NEXT_PUBLIC_API_URL` (default `http://localhost:8000`), documented in README.md.
 
 ## Commands
 
@@ -32,6 +32,15 @@ There is no `test` or `typecheck` script.
 Route props are async: `params` and `searchParams` are Promises. Prefer the generated global helpers, e.g. `PageProps<'/blog/[slug]'>` and `LayoutProps<'/'>` (the root layout already uses `LayoutProps<"/">`), rather than hand-written prop types.
 
 Turbopack is the default bundler for dev and build, but the dev server does **not** typecheck (`next build` does). Run the typecheck commands above before considering work done.
+
+## Data model
+
+- `src/lib/travel-packages.ts` owns package data: the `TravelPackage` type, `fetchTravelPackages()` (GET `{API_BASE_URL}/destinations`; accepts a bare array or `{ packages: [...] }`), and `useTravelPackages()` — a `useSyncExternalStore` + localStorage store with a cross-tab `storage` listener. When the API is unreachable it falls back to this browser's saved copies and returns an error string.
+- `src/lib/bookings.ts` repeats that store pattern for bookings. Both stores are browser-local only — they are never shared between devices or browsers.
+- `/add-destination` POSTs to `{API_BASE_URL}/add-destination` itself, then calls `saveTravelPackage()` for the local copy, so packages created while the API is down still render.
+- `rating` is optional on `TravelPackage`; never assume a destination card has one.
+- Import `API_BASE_URL` from this lib rather than re-defining it in a page file.
+- `<Toaster>` wraps the whole app in `layout.tsx`, so `toast.add({...})` works from any component.
 
 ## UI and styling
 

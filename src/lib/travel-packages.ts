@@ -2,6 +2,10 @@
 
 import { useSyncExternalStore } from "react";
 
+/** Base URL of the external package API, e.g. http://localhost:8000. */
+export const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+
 export type TravelPackage = {
   id: string;
   destinationName: string;
@@ -12,15 +16,22 @@ export type TravelPackage = {
   departureDate: string;
   imageUrl: string;
   description: string;
+  /** Shown as a badge on destination cards; absent means the package has no rating. */
+  rating?: number;
 };
 
-type TravelPackagesSnapshot = {
+export type TravelPackagesResult = {
   packages: TravelPackage[];
+  /** Non-null when the API could not be reached and saved packages were used. */
   error: string | null;
 };
 
+type TravelPackagesSnapshot = TravelPackagesResult;
+
 const STORAGE_KEY = "wanderlust.travel-packages";
 const emptyPackages: TravelPackage[] = [];
+const apiErrorMessage =
+  "Could not reach the travel packages API. Showing packages saved in this browser.";
 const serverSnapshot: TravelPackagesSnapshot = {
   packages: emptyPackages,
   error: null,
@@ -48,6 +59,36 @@ function isTravelPackage(value: unknown): value is TravelPackage {
     typeof entry.imageUrl === "string" &&
     typeof entry.description === "string"
   );
+}
+
+function normalizeRating(value: unknown): number | undefined {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0
+    ? value
+    : undefined;
+}
+
+function normalizePackages(raw: unknown[]): TravelPackage[] {
+  return raw.map((value, index) => {
+    if (isTravelPackage(value)) {
+      const rating = normalizeRating(value.rating);
+      return rating === undefined ? value : { ...value, rating };
+    }
+
+    if (typeof value !== "object" || value === null) {
+      throw new Error(`Destination at index ${index} has an invalid format.`);
+    }
+
+    const entry = value as Record<string, unknown>;
+    const id = typeof entry._id === "string" ? entry._id : entry.id;
+    const normalized = { ...entry, id };
+
+    if (!isTravelPackage(normalized)) {
+      throw new Error(`Destination at index ${index} has an invalid format.`);
+    }
+
+    const rating = normalizeRating(entry.rating);
+    return rating === undefined ? normalized : { ...normalized, rating };
+  });
 }
 
 function parsePackages(value: string | null): TravelPackage[] {
@@ -127,6 +168,46 @@ function getSnapshot() {
 
 function getServerSnapshot() {
   return serverSnapshot;
+}
+
+function readSavedPackages(): TravelPackage[] {
+  try {
+    return parsePackages(window.localStorage.getItem(STORAGE_KEY));
+  } catch {
+    return emptyPackages;
+  }
+}
+
+/**
+ * Fetch packages from the API. When the API cannot be reached the packages
+ * saved in this browser are returned instead, with an error attached.
+ */
+export async function fetchTravelPackages(): Promise<TravelPackagesResult> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/destination`, {
+      headers: { Accept: "application/json" },
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      throw new Error(`API responded with status ${response.status}.`);
+    }
+
+    const body: unknown = await response.json();
+    const payload = Array.isArray(body)
+      ? body
+      : typeof body === "object" && body !== null
+        ? Object.values(body).find(Array.isArray)
+        : null;
+
+    if (!Array.isArray(payload)) {
+      throw new Error("API response is not a list of packages.");
+    }
+
+    return { packages: normalizePackages(payload), error: null };
+  } catch {
+    return { packages: readSavedPackages(), error: apiErrorMessage };
+  }
 }
 
 export function useTravelPackages() {

@@ -18,6 +18,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/toast";
 import {
+  API_BASE_URL,
   saveTravelPackage,
   useTravelPackages,
 } from "@/lib/travel-packages";
@@ -29,9 +30,6 @@ const categories = [
   { value: "adventure", label: "Adventure" },
   { value: "cultural", label: "Cultural" },
 ];
-
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 /** Form inputs share the light-slate fill from the design. */
 const fieldClass = "border-slate-200 bg-slate-50 placeholder:text-slate-400";
