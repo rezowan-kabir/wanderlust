@@ -331,26 +331,41 @@ export default function DestinationsPage() {
                       onClick={(event) => {
                         event.preventDefault();
 
-                        try {
-                          saveBooking(travelPackage);
-                        } catch (bookingError) {
-                          toast.add({
-                            title: "Could not add booking",
-                            description:
-                              bookingError instanceof Error
-                                ? bookingError.message
-                                : "Please try again.",
-                            type: "error",
-                          });
-                          return;
-                        }
+                        saveBooking(travelPackage)
+                          .then(() => {
+                            toast.add({
+                              title: "Booking added",
+                              description: `${travelPackage.destinationName} is now in your bookings.`,
+                              type: "success",
+                            });
+                            router.push("/bookings");
+                          })
+                          .catch((bookingError) => {
+                            // 401 means the API needs a signed-in user.
+                            if (
+                              bookingError instanceof Error &&
+                              (bookingError as Error & { status?: number })
+                                .status === 401
+                            ) {
+                              toast.add({
+                                title: "Sign in to book",
+                                description:
+                                  "You need an account to save a booking.",
+                                type: "info",
+                              });
+                              router.push("/login");
+                              return;
+                            }
 
-                        toast.add({
-                          title: "Booking added",
-                          description: `${travelPackage.destinationName} is now in your bookings.`,
-                          type: "success",
-                        });
-                        router.push("/bookings");
+                            toast.add({
+                              title: "Could not add booking",
+                              description:
+                                bookingError instanceof Error
+                                  ? bookingError.message
+                                  : "Please try again.",
+                              type: "error",
+                            });
+                          });
                       }}
                     >
                       Book Now

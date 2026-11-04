@@ -9,10 +9,18 @@ export const auth = betterAuth({
   database: mongodbAdapter(db, {
     client,
   }),
-  emailAndPassword: { 
-    enabled: true, 
-  }, 
-//   socialProviders: { 
+  emailAndPassword: {
+    enabled: true,
+  },
+  // Extra profile fields shown on /profile. Optional so existing users (and
+  // sign-ups that omit them) stay valid; MongoDB needs no migration for these.
+  user: {
+    additionalFields: {
+      location: { type: "string", required: false, defaultValue: "" },
+      nationality: { type: "string", required: false, defaultValue: "" },
+    },
+  },
+//   socialProviders: {
 //     github: { 
 //       clientId: process.env.GITHUB_CLIENT_ID as string, 
 //       clientSecret: process.env.GITHUB_CLIENT_SECRET as string, 
