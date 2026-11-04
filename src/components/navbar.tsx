@@ -2,21 +2,25 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, User, X } from "lucide-react";
+import { Menu, User, X, LogOut } from "lucide-react";
 import { useState } from "react";
+import { authClient } from "@/lib/auth-client";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverDescription,
+  PopoverHeader,
+  PopoverTitle,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 const navLinks = [
-  { href: "/", label: "Home", withIcon: false },
-  { href: "/destinations", label: "Destinations", withIcon: false },
-  { href: "/add-destination", label: "Add Destination", withIcon: false },
-  { href: "/bookings", label: "My Bookings", withIcon: false },
-  { href: "/admin", label: "Admin", withIcon: false },
-];
-
-const accountLinks = [
-  { href: "/profile", label: "Profile", withIcon: true },
-  { href: "/login", label: "Login", withIcon: false },
-  { href: "/signup", label: "Sign Up", withIcon: false },
+  { href: "/", label: "Home" },
+  { href: "/destinations", label: "Destinations" },
+  { href: "/add-destination", label: "Add Destination" },
+  { href: "/bookings", label: "My Bookings" },
+  { href: "/admin", label: "Admin" },
 ];
 
 /**
@@ -24,6 +28,14 @@ const accountLinks = [
  * It is absolutely positioned, so its parent must be `relative`.
  */
 export function Navbar() {
+  const {
+    data: session,
+    isPending, // loading state
+    error, // error object
+    refetch, // refetch the session
+  } = authClient.useSession();
+
+  const user = session?.user;
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
@@ -38,6 +50,7 @@ export function Navbar() {
           Wanderlast
         </Link>
 
+        {/* Main Nav Links */}
         <ul className="hidden items-center gap-7 lg:flex">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
@@ -59,20 +72,90 @@ export function Navbar() {
           })}
         </ul>
 
-        <ul className="ml-auto hidden items-center gap-6 lg:flex">
-          {accountLinks.map((link) => (
-            <li key={link.href}>
+        {/* Individual Account Links / Auth State with Popover */}
+        <div className="ml-auto hidden items-center gap-4 lg:flex">
+          {isPending ? (
+            <div className="h-8 w-20 animate-pulse rounded bg-neutral-200" />
+          ) : user ? (
+            // Logged In State: Popover Menu anchored to the Avatar
+            <Popover>
+              <PopoverTrigger className="inline-flex items-center gap-2 rounded-full py-1 pl-1 pr-3 text-[15px] font-medium text-neutral-800 transition-colors hover:bg-neutral-100 focus:outline-none">
+                <Avatar className="size-8">
+                  <AvatarImage
+                    referrerPolicy="no-referrer"
+                    src={user.image || ""}
+                    alt={user.name || "User"}
+                  />
+                  <AvatarFallback>
+                    {user.name ? (
+                      user.name.charAt(0).toUpperCase()
+                    ) : (
+                      <User className="size-4" />
+                    )}
+                  </AvatarFallback>
+                </Avatar>
+                <span>{user.name || "Account"}</span>
+              </PopoverTrigger>
+              <PopoverContent className="w-56 p-2" align="end">
+                <PopoverHeader className="px-2 py-1.5 text-left">
+                  <PopoverTitle className="text-sm font-semibold text-neutral-900">
+                    {user.name || "My Account"}
+                  </PopoverTitle>
+                  <PopoverDescription className="text-xs text-neutral-500 truncate">
+                    {user.email || ""}
+                  </PopoverDescription>
+                </PopoverHeader>
+
+                <div className="my-1.5 border-t border-neutral-100" />
+
+                <div className="flex flex-col gap-1">
+                  <Link
+                    href="/profile"
+                    className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-100"
+                  >
+                    <User className="size-4" />
+                    Profile
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      await authClient.signOut({
+                        fetchOptions: {
+                          onSuccess: () => {
+                            window.location.href = "/login";
+                          },
+                        },
+                      });
+                    }}
+                    className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
+                  >
+                    <LogOut className="size-4" />
+                    Logout
+                  </button>
+                </div>
+              </PopoverContent>
+            </Popover>
+          ) : (
+            // Logged Out State: Individual Login & Sign Up Links
+            <>
               <Link
-                href={link.href}
+                href="/login"
                 className="inline-flex items-center gap-1.5 text-[15px] font-medium text-neutral-800 transition-colors hover:text-brand"
               >
-                {link.withIcon ? <User className="size-4" aria-hidden /> : null}
-                {link.label}
+                <User className="size-4" aria-hidden />
+                Login
               </Link>
-            </li>
-          ))}
-        </ul>
+              <Link
+                href="/signup"
+                className="rounded-md bg-brand px-4 py-2 text-[15px] font-medium text-white transition-colors hover:bg-brand/90"
+              >
+                Sign Up
+              </Link>
+            </>
+          )}
+        </div>
 
+        {/* Mobile Menu Toggle Button */}
         <button
           type="button"
           onClick={() => setOpen((value) => !value)}
@@ -84,9 +167,10 @@ export function Navbar() {
         </button>
       </nav>
 
+      {/* Mobile Menu Dropdown */}
       {open ? (
         <div className="mt-2 rounded-md bg-white p-2 shadow-[0_2px_14px_rgba(0,0,0,0.18)] lg:hidden">
-          {[...navLinks, ...accountLinks].map((link) => (
+          {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
@@ -95,10 +179,59 @@ export function Navbar() {
                 pathname === link.href ? "text-brand" : "text-neutral-800"
               }`}
             >
-              {link.withIcon ? <User className="size-4" aria-hidden /> : null}
               {link.label}
             </Link>
           ))}
+
+          <div className="my-1 border-t border-neutral-200" />
+
+          {user ? (
+            <>
+              <Link
+                href="/profile"
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-2 rounded px-3 py-2.5 text-[15px] font-medium text-neutral-800 transition-colors hover:bg-neutral-100"
+              >
+                <User className="size-4" />
+                Profile
+              </Link>
+              <button
+                type="button"
+                onClick={async () => {
+                  setOpen(false);
+                  await authClient.signOut({
+                    fetchOptions: {
+                      onSuccess: () => {
+                        window.location.href = "/login";
+                      },
+                    },
+                  });
+                }}
+                className="flex w-full items-center gap-2 rounded px-3 py-2.5 text-[15px] font-medium text-red-600 transition-colors hover:bg-neutral-100"
+              >
+                <LogOut className="size-4" />
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-1.5 rounded px-3 py-2.5 text-[15px] font-medium text-neutral-800 transition-colors hover:bg-neutral-100"
+              >
+                <User className="size-4" />
+                Login
+              </Link>
+              <Link
+                href="/signup"
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-1.5 rounded px-3 py-2.5 text-[15px] font-medium text-brand transition-colors hover:bg-neutral-100"
+              >
+                Sign Up
+              </Link>
+            </>
+          )}
         </div>
       ) : null}
     </header>
