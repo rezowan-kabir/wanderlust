@@ -20,10 +20,12 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 Create a package at `/add-destination` and browse saved packages at `/destinations`.
 The form sends JSON to `POST /add-destination` on the API server at
-`http://localhost:8000` by default. Set `NEXT_PUBLIC_API_URL` to the API server's
-base URL when deploying. After the API accepts a package, this browser also saves
-a copy in local storage so it appears in the destinations list; browser copies
-are not shared between devices or browsers.
+`http://localhost:8000` by default. Configure the API server's base URL with
+`NEXT_PUBLIC_API_URL` in the project-root `.env` file or deployment environment.
+The same setting is used by all API requests, including browser-side requests;
+trailing slashes are removed automatically. After the API accepts a package,
+this browser also saves a copy in local storage so it appears in the destinations
+list; browser copies are not shared between devices or browsers.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 

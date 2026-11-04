@@ -5,5 +5,8 @@
  * a Server Component importing a value from that file receives a client-reference
  * stub instead of the string, which breaks any `fetch` built from it.
  */
-export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+const configuredApiBaseUrl = process.env.NEXT_PUBLIC_API_URL?.trim();
+
+export const API_BASE_URL = (
+  configuredApiBaseUrl || "http://localhost:8000"
+).replace(/\/+$/, "");
