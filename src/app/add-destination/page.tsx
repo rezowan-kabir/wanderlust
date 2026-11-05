@@ -22,6 +22,7 @@ import {
   saveTravelPackage,
   useTravelPackages,
 } from "@/lib/travel-packages";
+import { authClient } from "@/lib/auth-client";
 
 const categories = [
   { value: "beach", label: "Beach" },
@@ -61,15 +62,23 @@ export default function AddDestinationPage() {
     setIsSubmitting(true);
 
     try {
+      const { data: tokenData, error: tokenError } = await authClient.token();
+      const token = tokenData?.token;
+
+      if (tokenError || !token) {
+        throw new Error("Unable to retrieve session token. Please log in.");
+      }
+
       const response = await fetch(`${API_BASE_URL}/add-destination`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(entry),
       });
       const data: unknown = await response.json();
-     
+
       if (!response.ok) {
         const message =
           typeof data === "object" &&
@@ -94,9 +103,7 @@ export default function AddDestinationPage() {
       toast.add({
         title: "Could not add travel package",
         description:
-          error instanceof Error
-            ? error.message
-            : "Please try again.",
+          error instanceof Error ? error.message : "Please try again.",
         type: "error",
       });
     } finally {
@@ -117,7 +124,7 @@ export default function AddDestinationPage() {
 
       <Card className="mx-auto mt-14 w-full max-w-[544px] rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.08)] ring-0 [--card-spacing:1.75rem]">
         <form
-          className="flex flex-col gap-4 px-7"
+          className="flex flex-col gap-4 px-7 py-6"
           onReset={() => {
             setCategory(null);
           }}
