@@ -17,6 +17,8 @@ import { BookNowButton } from "./book-now-button";
 import { DeleteDestinationButton } from "./delete-destination-button";
 import { API_BASE_URL } from "@/lib/api";
 import type { TravelPackage } from "@/lib/travel-packages";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 type DetailResult =
   | { status: "ok"; destination: TravelPackage }
@@ -70,14 +72,21 @@ function DetailError() {
   );
 }
 
+
 async function DestinationDetail({ id }: { id: string }) {
   let result: DetailResult;
+
+
+const jwtToken  = await auth.api.getToken({
+  headers: await headers(),
+});
+console.log(jwtToken?.token)
 
   try {
     const response = await fetch(`${API_BASE_URL}/destination/${id}`, {
       headers: {
         Accept: "application/json",
-        authorization: "user logged in",
+        authorization: `Bearer ${jwtToken?.token}`,
       },
       cache: "no-store",
     });

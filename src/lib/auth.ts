@@ -12,7 +12,7 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-  plagins:[jwt()],
+  plugins: [jwt()],
   session:{
     cookieCache:{
         enabled: true,
