@@ -24,16 +24,16 @@ const features = [
 /** Pale-blue band with three value-proposition cards. */
 export function WhyChooseUs() {
   return (
-    <section className="bg-[#e0f7fa] py-28">
-      <div className="mx-auto w-full max-w-[1200px] px-6">
-        <h2 className="text-center text-4xl font-light leading-tight text-neutral-900 sm:text-5xl lg:text-6xl">
+    <section className="bg-[#e0f7fa] py-16 sm:py-28">
+      <div className="mx-auto w-full max-w-[1200px] px-3 sm:px-6">
+        <h2 className="text-center text-3xl font-light leading-tight text-neutral-900 sm:text-5xl lg:text-6xl">
           Why Choose Wanderlust
         </h2>
-        <p className="mt-4 text-center text-base text-neutral-500">
+        <p className="mt-3 text-center text-sm text-neutral-500 sm:mt-4 sm:text-base">
           Your trusted partner for exceptional travel experiences
         </p>
 
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-6 grid grid-cols-3 gap-2 sm:mt-10 sm:gap-6">
           {features.map((feature) => (
             <FeatureCard key={feature.title} {...feature} />
           ))}

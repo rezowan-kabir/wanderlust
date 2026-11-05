@@ -1,7 +1,7 @@
 # Wanderlust
 
 A travel booking site built with **Next.js 16 (App Router)**, **Better Auth**, and **MongoDB**.
-Browse curated destinations, sign up, book trips, and manage your bookings from a
+Browse curated destinations, sign up, book trips, and manage your bokings from a
 personal dashboard.
 
 The repository contains two cooperating applications:

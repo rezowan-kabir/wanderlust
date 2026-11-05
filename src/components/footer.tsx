@@ -38,35 +38,35 @@ const socials = [
 export function Footer() {
   return (
     <footer className="bg-[#111111] text-white">
-      <div className="mx-auto w-full max-w-[1200px] px-6 pb-10 pt-28">
+      <div className="mx-auto w-full max-w-[1200px] px-4 pb-6 pt-12 sm:px-6 sm:pb-10 sm:pt-28">
         <Image
           src="/assets/Wanderlast-1.png"
           alt="Wanderlast"
           width={542}
           height={80}
-          className="h-auto w-full max-w-[490px]"
+          className="h-auto w-full max-w-[300px] sm:max-w-[490px]"
         />
-        <p className="mt-5 text-[15px] text-neutral-300">
+        <p className="mt-3 text-sm text-neutral-300 sm:mt-5 sm:text-[15px]">
           Your gateway to extraordinary travel experiences around the world.
         </p>
 
-        <div className="mt-16 grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.7fr_1fr_1fr_0.9fr]">
+        <div className="mt-8 grid gap-7 sm:mt-16 sm:grid-cols-2 sm:gap-10 lg:grid-cols-[1.7fr_1fr_1fr_0.9fr]">
           <div>
-            <h3 className="text-[17px] uppercase text-white">Newsletter</h3>
-            <p className="mt-2 text-sm text-neutral-400">
+            <h3 className="text-base uppercase text-white sm:text-[17px]">Newsletter</h3>
+            <p className="mt-2 text-xs text-neutral-400 sm:text-sm">
               Subscribe for exclusive travel deals and inspiration.
             </p>
             <NewsletterForm />
           </div>
 
           <div>
-            <h3 className="text-[17px] uppercase text-white">Quick Links</h3>
-            <ul className="mt-6 flex flex-col gap-5">
+            <h3 className="text-base uppercase text-white sm:text-[17px]">Quick Links</h3>
+            <ul className="mt-4 flex flex-col gap-3 sm:mt-6 sm:gap-5">
               {quickLinks.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-[15px] text-neutral-200 transition-colors hover:text-white"
+                    className="text-sm text-neutral-200 transition-colors hover:text-white sm:text-[15px]"
                   >
                     {link.label}
                   </Link>
@@ -76,13 +76,13 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="text-[17px] uppercase text-white">Support</h3>
-            <ul className="mt-6 flex flex-col gap-5">
+            <h3 className="text-base uppercase text-white sm:text-[17px]">Support</h3>
+            <ul className="mt-4 flex flex-col gap-3 sm:mt-6 sm:gap-5">
               {supportLinks.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-[15px] text-neutral-200 transition-colors hover:text-white"
+                    className="text-sm text-neutral-200 transition-colors hover:text-white sm:text-[15px]"
                   >
                     {link.label}
                   </Link>
@@ -92,8 +92,8 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="text-[17px] uppercase text-white">Contact Us</h3>
-            <ul className="mt-6 flex flex-col gap-5 text-[15px] text-neutral-200">
+            <h3 className="text-base uppercase text-white sm:text-[17px]">Contact Us</h3>
+            <ul className="mt-4 flex flex-col gap-3 text-sm text-neutral-200 sm:mt-6 sm:gap-5 sm:text-[15px]">
               <li>
                 <a
                   href="tel:+1786901622"
@@ -114,14 +114,14 @@ export function Footer() {
           </div>
         </div>
 
-        <hr className="mt-12 border-white/10" />
+        <hr className="mt-8 border-white/10 sm:mt-12" />
 
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
-          <p className="text-sm text-neutral-400">
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-4 sm:mt-6">
+          <p className="text-xs text-neutral-400 sm:text-sm">
             © 2026 Wanderlust. All rights reserved.
           </p>
 
-          <div className="flex items-center gap-7">
+          <div className="flex items-center gap-5 sm:gap-7">
             {socials.map((social) => (
               <a
                 key={social.label}
@@ -132,7 +132,7 @@ export function Footer() {
                 <svg
                   viewBox="0 0 24 24"
                   fill="currentColor"
-                  className="size-6"
+                  className="size-5 sm:size-6"
                   aria-hidden
                 >
                   <path d={social.path} />

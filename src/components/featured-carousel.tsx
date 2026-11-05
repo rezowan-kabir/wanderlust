@@ -41,25 +41,25 @@ function DestinationCard({ travelPackage }: { travelPackage: TravelPackage }) {
         ) : null}
       </div>
 
-      <div className="mt-4">
-        <p className="flex items-center gap-1.5 text-sm text-slate-500">
-          <MapPin className="size-4 shrink-0 text-slate-400" aria-hidden />
+      <div className="mt-3 sm:mt-4">
+        <p className="flex items-center gap-1.5 text-xs text-slate-500 sm:text-sm">
+          <MapPin className="size-3.5 shrink-0 text-slate-400 sm:size-4" aria-hidden />
           {travelPackage.country}
         </p>
 
-        <div className="mt-2 flex items-baseline justify-between gap-4">
-          <h3 className="min-w-0 truncate text-2xl font-semibold tracking-tight text-slate-900">
+        <div className="mt-1.5 flex min-w-0 flex-col gap-0.5 sm:mt-2 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
+          <h3 className="min-w-0 truncate text-sm font-semibold tracking-tight text-slate-900 sm:text-2xl">
             {travelPackage.destinationName}
           </h3>
-          <p className="shrink-0 text-xl font-bold text-slate-900">
+          <p className="shrink-0 text-sm font-bold text-slate-900 sm:text-xl">
             ${travelPackage.price}
             <span className="text-xs font-normal text-slate-400">/Person</span>
           </p>
         </div>
 
-        <p className="mt-2 flex items-center gap-1.5 text-sm text-slate-500">
+        <p className="mt-1.5 flex items-center gap-1.5 text-xs text-slate-500 sm:mt-2 sm:text-sm">
           <CalendarDays
-            className="size-4 shrink-0 text-slate-400"
+            className="size-3.5 shrink-0 text-slate-400 sm:size-4"
             aria-hidden
           />
           {travelPackage.duration}
@@ -67,7 +67,7 @@ function DestinationCard({ travelPackage }: { travelPackage: TravelPackage }) {
 
         <Link
           href={`/destinations/${travelPackage.id}`}
-          className="mt-4 inline-flex items-center gap-1.5 text-[13px] font-bold tracking-wider text-brand uppercase transition-opacity hover:opacity-80"
+          className="mt-3 inline-flex items-center gap-1 text-[11px] font-bold tracking-wider text-brand uppercase transition-opacity hover:opacity-80 sm:mt-4 sm:gap-1.5 sm:text-[13px]"
         >
           Book Now
           <ArrowUpRight className="size-4" aria-hidden />
@@ -112,7 +112,7 @@ export function FeaturedCarousel({ packages }: { packages: TravelPackage[] }) {
         {packages.map((travelPackage) => (
           <CarouselItem
             key={travelPackage.id}
-            className="basis-[85%] sm:basis-[46%]"
+            className="basis-[66%] sm:basis-[46%]"
           >
             <DestinationCard travelPackage={travelPackage} />
           </CarouselItem>

@@ -15,18 +15,22 @@ export function TestimonialCard({
   image,
 }: TestimonialCardProps) {
   return (
-    <article className="flex h-full flex-col gap-4 border border-neutral-200 bg-white p-6 sm:flex-row">
+    <article className="flex h-full flex-col gap-3 border border-neutral-200 bg-white p-4 sm:flex-row sm:gap-4 sm:p-5">
       <div className="flex flex-1 flex-col">
-        <p className="text-[19px] leading-6 text-neutral-900">{quote}</p>
+        <p className="text-base leading-6 text-neutral-900 sm:text-[17px]">
+          {quote}
+        </p>
 
         {/* The em dash hangs outside the text block, like the design. */}
-        <div className="mt-auto flex gap-2 pt-12">
-          <span aria-hidden className="text-[17px] leading-tight text-brand">
+        <div className="mt-auto flex gap-2 pt-8 sm:pt-10">
+          <span aria-hidden className="text-base leading-tight text-brand">
             —
           </span>
           <div>
-            <p className="text-[17px] leading-tight text-brand">{author}</p>
-            <p className="mt-1 text-sm text-neutral-500">{location}</p>
+            <p className="text-base leading-tight text-brand">{author}</p>
+            <p className="mt-1 text-xs text-neutral-500 sm:text-sm">
+              {location}
+            </p>
           </div>
         </div>
       </div>
@@ -34,9 +38,9 @@ export function TestimonialCard({
       <Image
         src={image}
         alt={`${author} from ${location}`}
-        width={198}
-        height={234}
-        className="h-56 w-full shrink-0 object-cover sm:h-[234px] sm:w-[198px] lg:w-40 xl:w-[198px]"
+        width={170}
+        height={200}
+        className="h-48 w-full shrink-0 object-cover sm:h-[200px] sm:w-[170px]"
       />
     </article>
   );
