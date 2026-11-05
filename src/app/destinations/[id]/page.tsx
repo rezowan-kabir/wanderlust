@@ -75,7 +75,10 @@ async function DestinationDetail({ id }: { id: string }) {
 
   try {
     const response = await fetch(`${API_BASE_URL}/destination/${id}`, {
-      headers: { Accept: "application/json" },
+      headers: {
+        Accept: "application/json",
+        authorization: "user logged in",
+      },
       cache: "no-store",
     });
 
