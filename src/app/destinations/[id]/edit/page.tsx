@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { API_BASE_URL } from "@/lib/api";
 import type { TravelPackage } from "@/lib/travel-packages";
 import { EditPackageForm } from "./edit-form";
+import { getTokenFromClient } from "@/lib/getTokenFromClient";
 
 function EditFormFallback() {
   return (
@@ -27,8 +28,12 @@ function EditFormFallback() {
  * prerender under Cache Components (see `/destinations/[id]`).
  */
 async function EditDestination({ id }: { id: string }) {
+  const token = await getTokenFromClient()
   const response = await fetch(`${API_BASE_URL}/destination/${id}`, {
-    headers: { Accept: "application/json" },
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
     cache: "no-store",
   });
 

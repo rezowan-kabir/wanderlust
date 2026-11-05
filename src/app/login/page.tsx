@@ -78,7 +78,7 @@ export default function LoginPage() {
         description: "Welcome back! Your adventure continues.",
         type: "success",
       });
-      router.push("/destinations");
+      router.push("/");
     } catch (error) {
       toast.add({
         title: "Could not sign in",

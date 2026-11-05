@@ -19,6 +19,7 @@ import { API_BASE_URL } from "@/lib/api";
 import type { TravelPackage } from "@/lib/travel-packages";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { getTokenFromServer } from "@/lib/getTokenFromServer";
 
 type DetailResult =
   | { status: "ok"; destination: TravelPackage }
@@ -77,16 +78,13 @@ async function DestinationDetail({ id }: { id: string }) {
   let result: DetailResult;
 
 
-const jwtToken  = await auth.api.getToken({
-  headers: await headers(),
-});
-console.log(jwtToken?.token)
+const token =  await getTokenFromServer()
 
   try {
     const response = await fetch(`${API_BASE_URL}/destination/${id}`, {
       headers: {
         Accept: "application/json",
-        authorization: `Bearer ${jwtToken?.token}`,
+        authorization: `Bearer ${token}`,
       },
       cache: "no-store",
     });

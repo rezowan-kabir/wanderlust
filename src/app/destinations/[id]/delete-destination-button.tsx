@@ -6,6 +6,7 @@ import { Trash2 } from "lucide-react";
 
 import { toast } from "@/components/ui/toast";
 import { API_BASE_URL, removeTravelPackage } from "@/lib/travel-packages";
+import { getTokenFromClient } from "@/lib/getTokenFromClient";
 
 /**
  * Destructive, so it takes two clicks: the first arms the button, the second
@@ -31,9 +32,13 @@ export function DeleteDestinationButton({
     setIsDeleting(true);
 
     try {
+      const token = await getTokenFromClient()
       const response = await fetch(`${API_BASE_URL}/destination/${id}`, {
         method: "DELETE",
-        headers: { Accept: "application/json" },
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (!response.ok) {

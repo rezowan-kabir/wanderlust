@@ -92,7 +92,7 @@ export default function SignUpPage() {
         description: `Welcome, ${name}! You can now start booking trips.`,
         type: "success",
       });
-      router.push("/destinations");
+      router.push("/");
     } catch (error) {
       toast.add({
         title: "Could not create account",
@@ -206,5 +206,4 @@ export default function SignUpPage() {
     </main>
   );
 }
-
 

@@ -22,7 +22,8 @@ import {
   saveTravelPackage,
   useTravelPackages,
 } from "@/lib/travel-packages";
-import { authClient } from "@/lib/auth-client";
+import { getTokenFromClient } from "@/lib/getTokenFromClient";
+
 
 const categories = [
   { value: "beach", label: "Beach" },
@@ -32,10 +33,8 @@ const categories = [
   { value: "cultural", label: "Cultural" },
 ];
 
-/** Form inputs share the light-slate fill from the design. */
 const fieldClass = "border-slate-200 bg-slate-50 placeholder:text-slate-400";
 
-/** Package creation form shown on /add-destination. */
 export default function AddDestinationPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [category, setCategory] = useState<string | null>(null);
@@ -62,13 +61,8 @@ export default function AddDestinationPage() {
     setIsSubmitting(true);
 
     try {
-      const { data: tokenData, error: tokenError } = await authClient.token();
-      const token = tokenData?.token;
-
-      if (tokenError || !token) {
-        throw new Error("Unable to retrieve session token. Please log in.");
-      }
-
+      
+      const token = await getTokenFromClient()
       const response = await fetch(`${API_BASE_URL}/add-destination`, {
         method: "POST",
         headers: {

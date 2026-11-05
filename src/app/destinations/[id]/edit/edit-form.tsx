@@ -23,6 +23,7 @@ import {
   updateTravelPackage,
   type TravelPackage,
 } from "@/lib/travel-packages";
+import { getTokenFromClient } from "@/lib/getTokenFromClient";
 
 const categories = [
   { value: "beach", label: "Beach" },
@@ -71,6 +72,7 @@ export function EditPackageForm({
     setIsSubmitting(true);
 
     try {
+      const token = await getTokenFromClient()
       const response = await fetch(
         `${API_BASE_URL}/destination/${destination.id}`,
         {
@@ -78,6 +80,9 @@ export function EditPackageForm({
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
+           
+              Authorization: `Bearer ${token}`,
+            
           },
           body: JSON.stringify(entry),
         },
